@@ -3,6 +3,7 @@
           package="org.foodrev.androidthingpi">
 
     <application>
+
         <uses-library android:name="com.google.android.things"/>
 
         <activity android:name=".MainActivity">
