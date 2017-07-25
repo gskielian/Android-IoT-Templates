@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "316360145490",
+    "firebase_url": "https://androidosmosis.firebaseio.com",
+    "project_id": "androidosmosis",
+    "storage_bucket": "androidosmosis.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316360145490:android:1cd2b2327e3c3d66",
+        "android_client_info": {
+          "package_name": "org.foodrev.androidthingpi"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "316360145490-3r7s9kf5fuepe799id2dmqdm0afrrtd5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "org.foodrev.androidthingpi",
+            "certificate_hash": "e75c4ccdd20219e48398894bbdb87eea30583b38"
+          }
+        },
+        {
+          "client_id": "316360145490-ffntt439ro3bde0s3hpbovn48e2u4dpu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1Dltz1EldHv3bi_VwPaoHaXIZY9h3bB8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "316360145490-ffntt439ro3bde0s3hpbovn48e2u4dpu.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
