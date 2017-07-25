@@ -5,8 +5,11 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.things.pio.PeripheralManagerService;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.foodrev.androidthingpi.leds.BlueLED;
 import org.foodrev.androidthingpi.leds.GreenLED;
@@ -53,26 +56,33 @@ public class MainActivity extends Activity {
             @Override
             public void run() {
                 setupFirebase();
+                databaseReference.child("faucet").setValue("off");
                 PeripheralManagerService manager = new PeripheralManagerService();
 
-                LED redLED = new RedLED(manager);
-                LED greenLED = new GreenLED(manager);
-                LED blueLED = new BlueLED(manager);
+                final LED blueLED = new BlueLED(manager);
 
-                ArrayList<LED> ledArray = new ArrayList<>();
-
-                ledArray.add(redLED);
-                ledArray.add(greenLED);
-                ledArray.add(blueLED);
-
-                while (true) {
-                    for (LED led : ledArray) {
-                        led.turnOn();
-                        databaseReference.setValue(led.toString());
-                        delay(1000);
-                        led.turnOff();
+                ValueEventListener valueEventListener = new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        // double check to ensure child is there
+                        if(dataSnapshot.hasChild("faucet")) {
+                            // if on, then perform sequence
+                            if (dataSnapshot.child("faucet").getValue().toString().equals("on")) {
+                                blueLED.turnOn();
+                                delay(5000);
+                                blueLED.turnOff();
+                                databaseReference.child("faucet").setValue("off");
+                            }
+                        }
                     }
-                }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                };
+
+                databaseReference.addValueEventListener(valueEventListener);
+
             }
         });
         thread.start();
@@ -88,7 +98,7 @@ public class MainActivity extends Activity {
 
     private void setupFirebase() {
         firebaseDatabase = FirebaseDatabase.getInstance();
-        databaseReference = firebaseDatabase.getReference("current_led");
+        databaseReference = firebaseDatabase.getReference("/");
     }
 
 }
