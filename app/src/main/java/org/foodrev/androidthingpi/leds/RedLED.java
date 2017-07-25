@@ -14,4 +14,7 @@ public class RedLED extends LED {
         super(manager, "BCM6");
     }
 
+    public String toString() {
+        return "Red LED";
+    }
 }

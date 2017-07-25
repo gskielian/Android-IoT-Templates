@@ -72,4 +72,6 @@ public abstract class LED {
         // higher voltage is considered active
         mGpio.setActiveType(Gpio.ACTIVE_HIGH);
     }
+
+    abstract public String toString();
 }

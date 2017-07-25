@@ -12,4 +12,8 @@ public class BlueLED extends LED {
     public BlueLED(PeripheralManagerService manager) {
         super(manager, "BCM26");
     }
+
+    public String toString() {
+        return "Blue LED";
+    }
 }

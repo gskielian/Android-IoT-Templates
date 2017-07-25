@@ -12,4 +12,8 @@ public class GreenLED extends LED {
     public GreenLED(PeripheralManagerService manager) {
         super(manager, "BCM19");
     }
+
+    public String toString() {
+        return "Green LED";
+    }
 }

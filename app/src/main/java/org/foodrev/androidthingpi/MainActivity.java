@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.things.pio.PeripheralManagerService;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import org.foodrev.androidthingpi.leds.BlueLED;
 import org.foodrev.androidthingpi.leds.GreenLED;
@@ -12,7 +14,6 @@ import org.foodrev.androidthingpi.leds.RedLED;
 import org.foodrev.androidthingpi.leds.base.LED;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Skeleton of an Android Things activity.
@@ -36,6 +37,8 @@ import java.util.List;
 public class MainActivity extends Activity {
 
     private final static String TAG = "MainActivity";
+    FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +52,7 @@ public class MainActivity extends Activity {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
+                setupFirebase();
                 PeripheralManagerService manager = new PeripheralManagerService();
 
                 LED redLED = new RedLED(manager);
@@ -63,8 +67,10 @@ public class MainActivity extends Activity {
 
                 while (true) {
                     for (LED led : ledArray) {
-                        led.toggle();
-                        delay(100);
+                        led.turnOn();
+                        databaseReference.setValue(led.toString());
+                        delay(1000);
+                        led.turnOff();
                     }
                 }
             }
@@ -74,13 +80,15 @@ public class MainActivity extends Activity {
 
     public void delay(int delayMillis) {
         try {
-            Thread.sleep(delayMillis);                 //1000 milliseconds is one second.
+            Thread.sleep(delayMillis);
         } catch(InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
-
     }
 
-
+    private void setupFirebase() {
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("current_led");
+    }
 
 }
