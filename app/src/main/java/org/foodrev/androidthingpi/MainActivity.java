@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
                 databaseReference.child("faucet").setValue("off");
                 PeripheralManagerService manager = new PeripheralManagerService();
 
-                final LED blueLED = new BlueLED(manager);
+                final LED redLED = new RedLED(manager);
 
                 ValueEventListener valueEventListener = new ValueEventListener() {
                     @Override
@@ -68,21 +68,17 @@ public class MainActivity extends Activity {
                         if(dataSnapshot.hasChild("faucet")) {
                             // if on, then perform sequence
                             if (dataSnapshot.child("faucet").getValue().toString().equals("on")) {
-                                blueLED.turnOn();
+                                redLED.turnOn();
                                 delay(5000);
-                                blueLED.turnOff();
+                                redLED.turnOff();
                                 databaseReference.child("faucet").setValue("off");
                             }
                         }
                     }
-
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                    }
+                    public void onCancelled(DatabaseError databaseError) {}
                 };
-
                 databaseReference.addValueEventListener(valueEventListener);
-
             }
         });
         thread.start();
