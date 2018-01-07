@@ -10,7 +10,7 @@ import org.foodrev.androidthingpi.leds.base.LED;
 
 public class GreenLED extends LED {
     public GreenLED(PeripheralManagerService manager) {
-        super(manager, "BCM19");
+        super(manager, "GPIO_34");
     }
 
     public String toString() {

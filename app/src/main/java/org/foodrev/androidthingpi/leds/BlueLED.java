@@ -10,7 +10,7 @@ import org.foodrev.androidthingpi.leds.base.LED;
 
 public class BlueLED extends LED {
     public BlueLED(PeripheralManagerService manager) {
-        super(manager, "BCM26");
+        super(manager, "GPIO_33");
     }
 
     public String toString() {

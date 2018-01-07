@@ -11,7 +11,7 @@ import org.foodrev.androidthingpi.leds.base.LED;
 public class RedLED extends LED {
 
     public RedLED(PeripheralManagerService manager) {
-        super(manager, "BCM6");
+        super(manager, "GPIO_35");
     }
 
     public String toString() {

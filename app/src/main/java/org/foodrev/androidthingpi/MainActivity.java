@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -11,12 +12,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.foodrev.androidthingpi.leds.BlueLED;
-import org.foodrev.androidthingpi.leds.GreenLED;
+import org.foodrev.androidthingpi.i2c.AbstractI2cDevice;
+import org.foodrev.androidthingpi.i2c.devices.TMP006;
 import org.foodrev.androidthingpi.leds.RedLED;
 import org.foodrev.androidthingpi.leds.base.LED;
-
-import java.util.ArrayList;
 
 /**
  * Skeleton of an Android Things activity.
@@ -42,24 +41,59 @@ public class MainActivity extends Activity {
     private final static String TAG = "MainActivity";
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
+    private LED redLED;
+    private TMP006 tmp006;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d("Hooray!", "onCreate: we did it!");
-        createLightsThread();
+        setupFirebase();
+        //createLightsThread();
+        createTemperatureSampleThread();
     }
 
-    public void createLightsThread() {
+
+    @Override protected void onDestroy(){
+        super.onDestroy();
+        tmp006.closeI2cDevice();
+    }
+
+
+    private void createTemperatureSampleThread() {
         Thread thread = new Thread(new Runnable() {
+            float temperature;
             @Override
             public void run() {
-                setupFirebase();
+                PeripheralManagerService manager = new PeripheralManagerService();
+                tmp006 = new TMP006(manager, 0x40);
+
+                for (;;) {
+                    temperature = tmp006.retrieveTemperatureReading();
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ex)  {
+                        Log.w(TAG, "run: ", ex);
+                    }
+                    databaseReference.child("temperature").setValue(String.valueOf(temperature));
+                }
+            }
+        });
+        thread.start();
+    }
+
+    private void createLightsThread() {
+        Thread thread = new Thread(new Runnable() {
+
+
+            @Override
+            public void run() {
                 databaseReference.child("faucet").setValue("off");
                 PeripheralManagerService manager = new PeripheralManagerService();
 
-                final LED redLED = new RedLED(manager);
+
+                redLED = new RedLED(manager);
 
                 ValueEventListener valueEventListener = new ValueEventListener() {
                     @Override
