@@ -3,6 +3,7 @@ package org.foodrev.androidthingpi;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.google.android.things.pio.I2cDevice;
 import com.google.android.things.pio.PeripheralManagerService;
@@ -13,6 +14,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import org.foodrev.androidthingpi.i2c.AbstractI2cDevice;
+import org.foodrev.androidthingpi.i2c.devices.STM32L4;
 import org.foodrev.androidthingpi.i2c.devices.TMP006;
 import org.foodrev.androidthingpi.leds.RedLED;
 import org.foodrev.androidthingpi.leds.base.LED;
@@ -42,12 +44,16 @@ public class MainActivity extends Activity {
     FirebaseDatabase firebaseDatabase;
     DatabaseReference databaseReference;
     private LED redLED;
-    private TMP006 tmp006;
+    private STM32L4 mSTM32L4;
+
+    private TextView centralTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        centralTextView = (TextView) findViewById(R.id.center_text);
         Log.d("Hooray!", "onCreate: we did it!");
         setupFirebase();
         //createLightsThread();
@@ -57,26 +63,29 @@ public class MainActivity extends Activity {
 
     @Override protected void onDestroy(){
         super.onDestroy();
-        tmp006.closeI2cDevice();
+        mSTM32L4.closeI2cDevice();
     }
 
 
     private void createTemperatureSampleThread() {
         Thread thread = new Thread(new Runnable() {
-            float temperature;
+            byte[] registerReading;
             @Override
             public void run() {
                 PeripheralManagerService manager = new PeripheralManagerService();
-                tmp006 = new TMP006(manager, 0x40);
+                mSTM32L4 = new STM32L4(manager, 0x40);
 
                 for (;;) {
-                    temperature = tmp006.retrieveTemperatureReading();
+                    registerReading = mSTM32L4.retrieveRegisterReading(
+                            0x02,
+                            1);
                     try {
                         Thread.sleep(1000);
                     } catch (InterruptedException ex)  {
                         Log.w(TAG, "run: ", ex);
                     }
-                    databaseReference.child("temperature").setValue(String.valueOf(temperature));
+                    databaseReference.child("registerReading").setValue(String.valueOf(registerReading));
+                    Log.i(TAG, "register reading is: " + registerReading.toString());
                 }
             }
         });
